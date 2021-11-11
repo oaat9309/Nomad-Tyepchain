@@ -1,3 +1,8 @@
+
+const a = 2;
+
+---------------------------------------------------------
+
 const sayHi = (name, gender, age) => {
   console.log(`Hello, ${name}! You are ${gender}, age of ${age}.`)
 }
