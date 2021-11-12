@@ -12,7 +12,15 @@ class block {
     previousHash:string, 
     timestamp: number, 
     data: string
-    ):string => CryptoJS.SHA256(index + previousHash +timestamp + data).toString;
+    ):string => CryptoJS.SHA256(index + previousHash + timestamp + data).toString;
+
+  static validateStructure = (aBlock: block) : boolean => 
+  typeof aBlock.index === "number" &&  
+  typeof aBlock.hash === "string" && 
+  typeof aBlock.previousHash === "string" &&
+  typeof aBlock.timestamp === "number" &&
+  typeof aBlock.data === "string";
+
   constructor(index: number, hash: string,
 previousHash: string,
 data: string,
@@ -37,4 +45,42 @@ const getLatestBlock = () : block => blockChain[blockChain.length - 1];
 
 const getNewTimeStamp = () : number => Math.round(new Date().getTime()/1000)
 
-export {}
+const createNewBlock = (data:string) : block => {
+  const previousBlock : block = getLatestBlock();
+  const newIndex : number = previousBlock.index + 1;
+  const newTimeStamp : number = getNewTimeStamp();
+  const newHash : string = block.calculateBlockHash(newIndex, previousBlock.hash, newTimeStamp, data);
+  const newBlock: block = new block(newIndex, newHash, previousBlock.hash, data, newTimeStamp);
+  addBlock(newBlock);
+  return newBlock;
+}
+
+const getHashForBlock = (aBlock : block) : string => block.calculateBlockHash(aBlock.index, aBlock.previousHash, aBlock.timestamp, aBlock.data)
+
+const isBlockValid = (candidateBlock : block, previousBlock: block) : boolean => {
+  if (block.validateStructure(candidateBlock)) {
+    return false;
+  }
+  else if (previousBlock.index + 1 !== candidateBlock.index) {
+    return false;
+  }
+  else if (previousBlock.hash !== candidateBlock.previousHash) {
+    return false;
+  }
+  else if (getHashForBlock(candidateBlock) !== candidateBlock.hash) {
+    return false;
+  }
+}
+
+const addBlock = (candidateBlock : block) : void => {
+  if(isBlockValid(candidateBlock, getLatestBlock())) {
+    blockChain.push(candidateBlock);
+  }
+}
+
+createNewBlock("second data")
+createNewBlock("third data")
+
+console.log(blockChain);
+
+export {};
