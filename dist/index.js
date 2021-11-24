@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-import { SHA256 } from "crypto-js";
+const CryptoJS = require("crypto-js");
 class block {
     constructor(index, hash, previousHash, data, timestamp) {
         this.index = index;
@@ -11,7 +11,7 @@ class block {
     }
 }
 //static으로 만든 메서드는 따로 객체를 만들지 않아도 class 단에서 바로 사용 가능
-block.calculateBlockHash = (index, previousHash, timestamp, data) => SHA256(index + previousHash + timestamp + data).toString;
+block.calculateBlockHash = (index, previousHash, timestamp, data) => CryptoJS.SHA256(index + previousHash + timestamp + data).toString;
 block.validateStructure = (aBlock) => typeof aBlock.index === "number" &&
     typeof aBlock.hash === "string" &&
     typeof aBlock.previousHash === "string" &&
